@@ -8,7 +8,7 @@ import { Plus, Clock, MapPin, Trash2, UtensilsCrossed, Camera, Car, ShoppingBag,
 import AddActivityForm from "@/components/AddActivityForm";
 import type { Trip, Activity } from "@/lib/types";
 import { useState } from "react";
-import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
+import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 
 // Định nghĩa lại các type cần thiết nếu chưa có sẵn
 // Xóa các interface Trip, Activity định nghĩa nội bộ
@@ -177,7 +177,7 @@ const ItineraryTab: React.FC<ItineraryTabProps> = ({ trip, activities, onAddActi
                 {dayActivities.length === 0 ? (
                   <p className="text-gray-500 text-center py-8">Chưa có hoạt động nào cho ngày này</p>
                 ) : (
-                  <Droppable droppableId={`droppable-day-${dayNumber}`} isDropDisabled={false} isCombineEnabled={false}>
+                  <Droppable droppableId={`droppable-day-${dayNumber}`}>
                     {(provided) => (
                       <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-4">
                         {dayActivities.map((activity, idx) => {

@@ -27,10 +27,34 @@ interface BudgetTabProps {
 // const ExpenseSplitting = (props: any) => null;
 
 const BudgetTab: React.FC<BudgetTabProps> = ({ trip, budget, expenses, totalExpenses, budgetProgress, onSetBudget, onAddExpense }) => {
-  const [newBudget, setNewBudget] = useState(budget.toString());
+  const [newBudget, setNewBudget] = useState(budget > 0 ? budget.toLocaleString("vi-VN") : "");
+
+  // Hàm format số với dấu chấm phân cách hàng nghìn
+  const formatNumber = (value: string) => {
+    // Loại bỏ tất cả ký tự không phải số
+    const numericValue = value.replace(/[^\d]/g, "");
+    if (numericValue === "") return "";
+    
+    // Chuyển thành số và format với dấu chấm
+    const number = parseInt(numericValue, 10);
+    return number.toLocaleString("vi-VN");
+  };
+
+  // Hàm chuyển đổi từ format có dấu chấm về số
+  const parseFormattedNumber = (value: string) => {
+    return parseInt(value.replace(/[^\d]/g, ""), 10) || 0;
+  };
+
+  const handleBudgetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formattedValue = formatNumber(e.target.value);
+    setNewBudget(formattedValue);
+  };
 
   const handleSetBudget = () => {
-    onSetBudget(Number.parseFloat(newBudget) || 0);
+    const numericValue = parseFormattedNumber(newBudget);
+    onSetBudget(numericValue);
+    // Cập nhật lại state với giá trị đã format
+    setNewBudget(numericValue > 0 ? numericValue.toLocaleString("vi-VN") : "");
   };
 
   const expensesByCategory = expenses.reduce(
@@ -49,15 +73,15 @@ const BudgetTab: React.FC<BudgetTabProps> = ({ trip, budget, expenses, totalExpe
           <CardTitle>Tổng quan ngân sách</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-end space-x-4">
             <div className="flex-1">
               <Label htmlFor="budget">Ngân sách dự kiến (VNĐ)</Label>
               <Input
                 id="budget"
-                type="number"
+                type="text"
                 value={newBudget}
-                onChange={(e) => setNewBudget(e.target.value)}
-                placeholder="Nhập ngân sách"
+                onChange={handleBudgetChange}
+                placeholder="Nhập ngân sách (VD: 3.000.000)"
               />
             </div>
             <Button onClick={handleSetBudget}>Cập nhật</Button>

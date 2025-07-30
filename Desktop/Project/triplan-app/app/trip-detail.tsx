@@ -127,6 +127,17 @@ export default function TripDetail({
     saveExpenses([...expenses, newExpense])
   }
 
+  const updateExpense = (id: number, expense: Omit<Expense, "id">) => {
+    const updatedExpenses = expenses.map((exp) => 
+      exp.id === id ? { ...expense, id } : exp
+    )
+    saveExpenses(updatedExpenses)
+  }
+
+  const deleteExpense = (id: number) => {
+    saveExpenses(expenses.filter((exp) => exp.id !== id))
+  }
+
   const addBooking = (booking: Omit<Booking, "id">) => {
     const newBooking = { ...booking, id: Date.now() }
     saveBookings([...bookings, newBooking])
@@ -201,6 +212,8 @@ export default function TripDetail({
               budgetProgress={budgetProgress}
               onSetBudget={saveBudget}
               onAddExpense={addExpense}
+              onUpdateExpense={updateExpense}
+              onDeleteExpense={deleteExpense}
             />
           </TabsContent>
 

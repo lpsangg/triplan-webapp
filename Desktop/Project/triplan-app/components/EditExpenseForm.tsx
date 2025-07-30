@@ -1,21 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import type { Expense } from "@/lib/types";
 
-interface AddExpenseFormProps {
+interface EditExpenseFormProps {
+  expense: Expense;
   onSubmit: (expense: Omit<Expense, "id">) => void;
+  onCancel: () => void;
 }
 
 const categories = ["Ăn uống", "Đi lại", "Vé tham quan", "Mua sắm", "Chỗ ở", "Giải trí", "Khác"];
 
-const AddExpenseForm: React.FC<AddExpenseFormProps> = ({ onSubmit }) => {
-  const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState("");
-  const [description, setDescription] = useState("");
-  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
+const EditExpenseForm: React.FC<EditExpenseFormProps> = ({ expense, onSubmit, onCancel }) => {
+  const [amount, setAmount] = useState(expense.amount.toLocaleString("vi-VN"));
+  const [category, setCategory] = useState(expense.category);
+  const [description, setDescription] = useState(expense.description);
+  const [date, setDate] = useState(expense.date);
 
   // Hàm format số với dấu chấm phân cách hàng nghìn
   const formatNumber = (value: string) => {
@@ -47,18 +49,14 @@ const AddExpenseForm: React.FC<AddExpenseFormProps> = ({ onSubmit }) => {
       description,
       date,
     });
-    setAmount("");
-    setCategory("");
-    setDescription("");
-    setDate(new Date().toISOString().split("T")[0]);
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="space-y-2">
-        <Label htmlFor="expense-amount">Số tiền (VNĐ)</Label>
+        <Label htmlFor="edit-expense-amount">Số tiền (VNĐ)</Label>
         <Input
-          id="expense-amount"
+          id="edit-expense-amount"
           type="text"
           placeholder="100.000"
           value={amount}
@@ -68,7 +66,7 @@ const AddExpenseForm: React.FC<AddExpenseFormProps> = ({ onSubmit }) => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="expense-category">Danh mục</Label>
+        <Label htmlFor="edit-expense-category">Danh mục</Label>
         <Select value={category} onValueChange={setCategory} required>
           <SelectTrigger>
             <SelectValue placeholder="Chọn danh mục" />
@@ -84,9 +82,9 @@ const AddExpenseForm: React.FC<AddExpenseFormProps> = ({ onSubmit }) => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="expense-description">Mô tả</Label>
+        <Label htmlFor="edit-expense-description">Mô tả</Label>
         <Input
-          id="expense-description"
+          id="edit-expense-description"
           placeholder="VD: Ăn trưa tại nhà hàng ABC"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -95,15 +93,26 @@ const AddExpenseForm: React.FC<AddExpenseFormProps> = ({ onSubmit }) => {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="expense-date">Ngày</Label>
-        <Input id="expense-date" type="date" value={date} onChange={(e) => setDate(e.target.value)} required />
+        <Label htmlFor="edit-expense-date">Ngày</Label>
+        <Input 
+          id="edit-expense-date" 
+          type="date" 
+          value={date} 
+          onChange={(e) => setDate(e.target.value)} 
+          required 
+        />
       </div>
 
-      <Button type="submit" className="w-full">
-        Thêm chi tiêu
-      </Button>
+      <div className="flex space-x-2">
+        <Button type="submit" className="flex-1">
+          Cập nhật
+        </Button>
+        <Button type="button" variant="outline" onClick={onCancel} className="flex-1">
+          Hủy
+        </Button>
+      </div>
     </form>
   );
 };
 
-export default AddExpenseForm; 
+export default EditExpenseForm; 
